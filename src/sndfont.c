@@ -66,8 +66,8 @@
  *----------------------------------------------------------------*/
 
 typedef struct _Layer {
-	sint16 val[PARM_SIZE];
-	sint8 set[PARM_SIZE];
+	sint16 val[SFPARM_SIZE];
+	sint8 set[SFPARM_SIZE];
 } Layer;
 
 typedef struct _SampleList {
@@ -454,7 +454,7 @@ static void parse_preset_layer(Layer *lay, SFInfo *sf, int idx)
 static void merge_layer(Layer *dst, Layer *src)
 {
 	int i;
-	for (i = 0; i < PARM_SIZE; i++) {
+	for (i = 0; i < SFPARM_SIZE; i++) {
 		if (src->set[i] && !dst->set[i]) {
 			dst->val[i] = src->val[i];
 			dst->set[i] = 1;
@@ -524,7 +524,7 @@ static int search_sample(Layer *lay)
 static void append_layer(Layer *dst, Layer *src, SFInfo *sf)
 {
 	int i;
-	for (i = 0; i < PARM_SIZE; i++) {
+	for (i = 0; i < SFPARM_SIZE; i++) {
 		if (src->set[i]) {
 			if (sf->version == 1 && i == SF_instVol)
 				dst->val[i] = (src->val[i] * 127) / 127;

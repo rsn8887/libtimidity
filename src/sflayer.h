@@ -94,6 +94,6 @@ enum {
 	SF_EOF,
 };
 
-#define PARM_SIZE	SF_EOF
+#define SFPARM_SIZE	SF_EOF
 
 #endif
