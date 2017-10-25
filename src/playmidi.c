@@ -424,7 +424,6 @@ static void note_off(MidSong *song)
 	  }
 	else
 	  finish_note(song, i);
-	return;
       }
 }
 
