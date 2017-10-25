@@ -98,7 +98,7 @@ typedef struct _SFInfo {
 	int nrpgens, nrigens;
 	tgenrec *presetgen, *instgen;
 
-	tsbkheader sbkh;
+	/*tsbkheader sbkh;*/
 
 	/*char *sf_name;*/
 
@@ -113,7 +113,7 @@ typedef struct _SFInfo {
 #define load_sbk TIMI_NAMESPACE(load_sbk)
 #define free_sbk TIMI_NAMESPACE(free_sbk)
 
-void load_sbk(FILE *fp, SFInfo *sf);
+int load_sbk(FILE *fp, SFInfo *sf);
 void free_sbk(SFInfo *sf);
 
 #endif
