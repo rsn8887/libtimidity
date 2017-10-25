@@ -76,11 +76,6 @@ typedef struct _tgenrec {
 	sint16 amount;
 } tgenrec;
 
-
-/*
- *
- */
-
 typedef struct _SFInfo {
 	uint16 version, minorversion;
 	sint32 samplepos, samplesize;
@@ -115,8 +110,10 @@ typedef struct _SFInfo {
  * functions
  *----------------------------------------------------------------*/
 
+#define load_sbk TIMI_NAMESPACE(load_sbk)
+#define free_sbk TIMI_NAMESPACE(free_sbk)
+
 void load_sbk(FILE *fp, SFInfo *sf);
 void free_sbk(SFInfo *sf);
-void sbk_to_text(char *text, int type, int val, SFInfo *sf);
 
 #endif
