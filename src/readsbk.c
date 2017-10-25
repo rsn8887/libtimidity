@@ -153,7 +153,7 @@ void load_sbk(FILE *fd, SFInfo *sf)
 	tchunk chunk, subchunk;
 
 	READID(sf->sbkh.riff, fd);
-	READDW(&sf->sbkh.size, fd);
+	READDW((uint32 *)&sf->sbkh.size, fd);
 	READID(sf->sbkh.sfbk, fd);
 
 	sf->in_rom = 1;
@@ -161,7 +161,7 @@ void load_sbk(FILE *fd, SFInfo *sf)
 		READID(chunk.id, fd);
 		switch (getchunk(chunk.id)) {
 		case LIST_ID:
-			READDW(&chunk.size, fd);
+			READDW((uint32 *)&chunk.size, fd);
 			READID(subchunk.id, fd);
 			process_chunk(getchunk(subchunk.id), chunk.size - 4, sf, fd);
 			break;
@@ -184,7 +184,7 @@ void free_sbk(SFInfo *sf)
 	timi_free(sf->instbag);
 	timi_free(sf->presetgen);
 	timi_free(sf->instgen);
-	/* if (sf->sf_name) timi_free(sf->sf_name); */
+	/*timi_free(sf->sf_name);*/
 	memset(sf, 0, sizeof(*sf));
 }
 
@@ -274,7 +274,6 @@ static void load_inst_header(int size, SFInfo *sf, FILE *fd)
 		READSTR(sf->insthdr[i].name, fd);
 		READW(&sf->insthdr[i].bagNdx, fd);
 	}
-		
 }
 
 static void load_bag(int size, SFInfo *sf, FILE *fd, int *totalp, unsigned short **bufp)
@@ -302,8 +301,8 @@ static void load_gen(int size, SFInfo *sf, FILE *fd, int *totalp, tgenrec **bufp
 	size /= 4;
 	buf = NEW(tgenrec, size);
 	for (i = 0; i < size; i++) {
-		READW(&buf[i].oper, fd);
-		READW(&buf[i].amount, fd);
+		READW((uint16 *)&buf[i].oper, fd);
+		READW((uint16 *)&buf[i].amount, fd);
 	}
 	*totalp = size;
 	*bufp = buf;
@@ -328,12 +327,12 @@ static void load_sample_info(int size, SFInfo *sf, FILE *fd)
 	for (i = 0; i < sf->nrinfos; i++) {
 		if (sf->version > 1)
 			READSTR(sf->samplenames[i].name, fd);
-		READDW(&sf->sampleinfo[i].startsample, fd);
-		READDW(&sf->sampleinfo[i].endsample, fd);
-		READDW(&sf->sampleinfo[i].startloop, fd);
-		READDW(&sf->sampleinfo[i].endloop, fd);
+		READDW((uint32 *)&sf->sampleinfo[i].startsample, fd);
+		READDW((uint32 *)&sf->sampleinfo[i].endsample, fd);
+		READDW((uint32 *)&sf->sampleinfo[i].startloop, fd);
+		READDW((uint32 *)&sf->sampleinfo[i].endloop, fd);
 		if (sf->version > 1) {
-			READDW(&sf->sampleinfo[i].samplerate, fd);
+			READDW((uint32 *)&sf->sampleinfo[i].samplerate, fd);
 			READB(&sf->sampleinfo[i].originalPitch, fd);
 			READB(&sf->sampleinfo[i].pitchCorrection, fd);
 			READW(&sf->sampleinfo[i].samplelink, fd);
