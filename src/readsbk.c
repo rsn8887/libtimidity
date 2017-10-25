@@ -88,12 +88,12 @@ static int READSTR(char *str, FILE *fd)
 #define SKIPW(fd)	fseek(fd, 2, SEEK_CUR)
 #define SKIPDW(fd)	fseek(fd, 4, SEEK_CUR)
 
-static int getchunk(char *id);
+static int getchunk(const char *id);
 static void process_chunk(int id, int s, SFInfo *sf, FILE *fd);
 static void load_sample_names(int size, SFInfo *sf, FILE *fd);
 static void load_preset_header(int size, SFInfo *sf, FILE *fd);
 static void load_inst_header(int size, SFInfo *sf, FILE *fd);
-static void load_bag(int size, SFInfo *sf, FILE *fd, int *totalp, unsigned short **bufp);
+static void load_bag(int size, SFInfo *sf, FILE *fd, int *totalp, uint16 **bufp);
 static void load_gen(int size, SFInfo *sf, FILE *fd, int *totalp, tgenrec **bufp);
 static void load_sample_info(int size, SFInfo *sf, FILE *fd);
 
@@ -121,19 +121,19 @@ enum {
  *----------------------------------------------------------------*/
 
 #if 0
-static void debugid(char *tag, char *p)
+static void debugid(const char *tag, const char *p)
 {
 	char buf[5]; strncpy(buf, p, 4); buf[4]=0;
 	fprintf(stderr,"[%s:%s]\n", tag, buf);
 }
 
-static void debugname(char *tag, char *p)
+static void debugname(const char *tag, const char *p)
 {
 	char buf[21]; strncpy(buf, p, 20); buf[20]=0;
 	fprintf(stderr,"[%s:%s]\n", tag, buf);
 }
 
-static void debugval(char *tag, int v)
+static void debugval(const char *tag, int v)
 {
 	fprintf(stderr, "[%s:%d]\n", tag, v);
 }
@@ -194,10 +194,10 @@ void free_sbk(SFInfo *sf)
  * get id value
  *----------------------------------------------------------------*/
 
-static int getchunk(char *id)
+static int getchunk(const char *id)
 {
 	static struct idstring {
-		char *str;
+		const char *str;
 		int id;
 	} idlist[] = {
 		{"LIST", LIST_ID},
@@ -276,7 +276,7 @@ static void load_inst_header(int size, SFInfo *sf, FILE *fd)
 	}
 }
 
-static void load_bag(int size, SFInfo *sf, FILE *fd, int *totalp, unsigned short **bufp)
+static void load_bag(int size, SFInfo *sf, FILE *fd, int *totalp, uint16 **bufp)
 {
 	uint16 *buf;
 	int i;
