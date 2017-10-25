@@ -45,11 +45,9 @@
 #include "common.h"
 #include "tables.h"
 #include "instrum.h"
-#include "playmidi.h"
 #include "sbk.h"
 #include "sflayer.h"
 #include "sndfont.h"
-#include "output.h"
 #include "resample.h"
 
 /*----------------------------------------------------------------
