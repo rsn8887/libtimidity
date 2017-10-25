@@ -294,7 +294,7 @@ static int read_config_file(const char *name, int rcf_count)
 	goto fail;
       }
       timi_free(sf_file);
-      sf_file=timi_calloc(strlen(w[1])+1);
+      sf_file = (char *) timi_calloc(strlen(w[1])+1);
       strcpy(sf_file,w[1]);
       for (j = 2; j < words; j++) {
 	if (!(cp = strchr(w[j], '='))) {
