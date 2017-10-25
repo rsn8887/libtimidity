@@ -56,7 +56,7 @@ static int READCHUNK(tchunk *vp, FILE *fd)
 	return 1;
 }
 
-static int READDW(uint32 *vp, FILE *fd)
+static int READDW(sint32 *vp, FILE *fd)
 {
 	if (fread(vp, 4, 1, fd) != 1) return -1;
 	*vp = SWAPLE32(*vp);
@@ -181,7 +181,7 @@ int load_sbk(FILE *fd, SFInfo *sf)
 		READID(chunk.id, fd);
 		switch (getchunk(chunk.id)) {
 		case LIST_ID:
-			READDW((uint32 *)&chunk.size, fd);
+			READDW(&chunk.size, fd);
 			READID(subchunk.id, fd);
 			process_chunk(getchunk(subchunk.id), chunk.size - 4, sf, fd);
 			break;
@@ -356,12 +356,12 @@ static void load_sample_info(int size, SFInfo *sf, FILE *fd)
 	for (i = 0; i < sf->nrinfos; i++) {
 		if (sf->version > 1)
 			READSTR(sf->samplenames[i].name, fd);
-		READDW((uint32 *)&sf->sampleinfo[i].startsample, fd);
-		READDW((uint32 *)&sf->sampleinfo[i].endsample, fd);
-		READDW((uint32 *)&sf->sampleinfo[i].startloop, fd);
-		READDW((uint32 *)&sf->sampleinfo[i].endloop, fd);
+		READDW(&sf->sampleinfo[i].startsample, fd);
+		READDW(&sf->sampleinfo[i].endsample, fd);
+		READDW(&sf->sampleinfo[i].startloop, fd);
+		READDW(&sf->sampleinfo[i].endloop, fd);
 		if (sf->version > 1) {
-			READDW((uint32 *)&sf->sampleinfo[i].samplerate, fd);
+			READDW(&sf->sampleinfo[i].samplerate, fd);
 			READB(&sf->sampleinfo[i].originalPitch, fd);
 			READB(&sf->sampleinfo[i].pitchCorrection, fd);
 			READW(&sf->sampleinfo[i].samplelink, fd);
