@@ -140,6 +140,7 @@ struct _MidSample
     loop_start, loop_end, data_length,
     sample_rate,
     low_freq, high_freq, root_freq;
+  sint8 root_tune, fine_tune; /* for soundfont support */
   sint32 envelope_rate[6], envelope_offset[6];
   float volume;
   sample_t *data;
@@ -148,6 +149,7 @@ struct _MidSample
     vibrato_sweep_increment, vibrato_control_ratio;
   uint8 tremolo_depth, vibrato_depth, modes;
   sint8 panning, note_to_use;
+  sint16 scale_tuning; /* for soundfont support */
 };
 
 typedef struct _MidChannel MidChannel;
@@ -183,9 +185,13 @@ struct _MidVoice
     envelope_stage, control_counter, panning, panned;
 };
 
+#define INST_GUS        0
+#define INST_SF2        1
+
 typedef struct _MidInstrument MidInstrument;
 struct _MidInstrument
 {
+  int type;
   int samples;
   MidSample *sample;
 };

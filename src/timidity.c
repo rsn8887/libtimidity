@@ -43,6 +43,7 @@
 #include "timidity_internal.h"
 #include "common.h"
 #include "instrum.h"
+#include "sndfont.h"
 #include "playmidi.h"
 #include "readmidi.h"
 #include "output.h"
@@ -90,6 +91,8 @@ static char *timi_fgets(char *s, int size, FILE *fp)
 }
 
 static FILE **rcf_fp;
+static char *sf_file = NULL; 
+static int sf_order = 0;
 
 static int read_config_file(const char *name, int rcf_count)
 {
@@ -184,17 +187,6 @@ static int read_config_file(const char *name, int rcf_count)
        * supposed to mean.
        */
       DEBUG_MSG("FIXME: Implement \"altassign\" in TiMidity config.\n");
-    }
-    else if (!strcmp(w[0], "soundfont") ||
-	     !strcmp(w[0], "font"))
-    {
-      /* "soundfont" sf_file "remove"
-       * "soundfont" sf_file ["order=" order] ["cutoff=" cutoff]
-       *                     ["reso=" reso] ["amp=" amp]
-       * "font" "exclude" bank preset keynote
-       * "font" "order" order bank preset keynote
-       */
-      DEBUG_MSG("FIXME: Implmement \"%s\" in TiMidity config.\n", w[0]);
     }
     else if (!strcmp(w[0], "progbase"))
     {
@@ -294,6 +286,60 @@ static int read_config_file(const char *name, int rcf_count)
 	if (!master_tonebank[i]->tone) goto fail;
       }
       bank=master_tonebank[i];
+    }
+    else if (!strcmp(w[0], "soundfont"))
+    {
+      if (words < 2) {
+	DEBUG_MSG("%s: line %d: No soundfont file given\n", name, line);
+	goto fail;
+      }
+      timi_free(sf_file);
+      sf_file=timi_calloc(strlen(w[1])+1);
+      strcpy(sf_file,w[1]);
+      for (j = 2; j < words; j++) {
+	if (!(cp = strchr(w[j], '='))) {
+	  DEBUG_MSG("%s: line %d: bad patch option %s\n", name, line, w[j]);
+	  goto fail;
+	}
+	*cp++=0;
+	if (!strcmp(w[j], "order")) {
+	  k = atoi(cp);
+	  if (k < 0 || (*cp < '0' || *cp > '9')) {
+	    DEBUG_MSG("%s: line %d: order must be a digit", name, line);
+	    goto fail;
+	  }
+	  sf_order = k;
+	}
+      }
+    }
+    else if (!strcmp(w[0], "font"))
+    {
+      int bank, preset, keynote;
+      if (words < 2) {
+	DEBUG_MSG("%s: line %d: no font command\n", name, line);
+	goto fail;
+      }
+      if (!strcmp(w[1], "exclude")) {
+	if (words < 3) {
+	  DEBUG_MSG("%s: line %d: No bank/preset/key is given\n", name, line);
+	  goto fail;
+	}
+	bank = atoi(w[2]);
+	preset = (words >= 4)? atoi(w[3]) : -1;
+	keynote = (words >= 5)? atoi(w[4]) : -1;
+	exclude_soundfont(bank, preset, keynote);
+      } else if (!strcmp(w[1], "order")) {
+	int order;
+	if (words < 4) {
+	  DEBUG_MSG("%s: line %d: No order/bank is given\n", name, line);
+	  goto fail;
+	}
+	order = atoi(w[2]);
+	bank = atoi(w[3]);
+	preset = (words >= 5)? atoi(w[4]) : -1;
+	keynote = (words >= 6)? atoi(w[5]) : -1;
+	order_soundfont(bank, preset, keynote, order);
+      }
     }
     else
     {
@@ -597,6 +643,9 @@ static void do_song_load(MidIStream *stream, MidSongOptions *options, MidSong **
   song->default_instrument = NULL;
   song->default_program = DEFAULT_PROGRAM;
 
+  if (sf_file)
+    init_soundfont(song, sf_file, sf_order);
+
   if (*def_instr_name)
     set_default_instrument(song, def_instr_name);
 
@@ -679,6 +728,10 @@ void mid_exit(void)
       master_drumset[i] = NULL;
     }
   }
+
+  timi_free(sf_file);
+  sf_file = NULL;
+  sf_order = 0;
 
   timi_free_pathlist();
 }

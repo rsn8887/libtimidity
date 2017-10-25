@@ -253,7 +253,7 @@ static void start_note(MidSong *song, MidEvent *e, int i)
 	  if (!(ip=song->drumset[0]->instrument[e->a]))
 	    return; /* No instrument? Then we can't play. */
 	}
-      if (ip->samples != 1)
+      if (ip->type == INST_GUS && ip->samples != 1)
 	{
 	  DEBUG_MSG("Strange: percussion instrument with %d samples!\n",
 		  ip->samples);
